@@ -1,0 +1,38 @@
+import pygame
+
+WIDTH, HEIGHT = 1100, 700
+COL, ROW = 22, 14
+SQUARE_SIZE = WIDTH/COL
+FPS = 60
+
+TREASURE_ROOMS = 1
+BOSS_ROOMS = 1
+SHOP_ROOMS = 1
+TOTAL_ROOMS = 30
+SECRET_ROOMS = 2
+SPECIAL_ROOMS = TREASURE_ROOMS + BOSS_ROOMS 
+
+
+RED = (255, 0, 0)   # Boss room
+WHITE = (255, 255, 255) # regular room
+BLACK = (0, 0, 0)
+BLUE = (0, 0, 255)  # secret room
+GREY = (128, 128, 128)  # starting room
+GREEN = (0, 255, 0) # shop room
+YELLOW = (255, 255, 0)
+
+STARTING = 'starting'
+BOSS = 'boss'
+TREASURE = 'treasure'
+SHOP = 'shop'
+SECRET = 'secret'
+COMMON = 'common'
+SPECIAL = [BOSS, TREASURE]
+SEMI_SPECIAL = [SHOP, SECRET]
+ROOM_TYPES = [STARTING, BOSS, TREASURE, SHOP, SECRET, COMMON]
+
+rooms_by_type: dict[str, int] = {BOSS:BOSS_ROOMS,
+                                 TREASURE:TREASURE_ROOMS,
+                                 SHOP:SHOP_ROOMS,
+                                 SECRET:SECRET_ROOMS,
+                                 COMMON:TOTAL_ROOMS - BOSS_ROOMS - TREASURE_ROOMS - SHOP_ROOMS - SECRET_ROOMS}
