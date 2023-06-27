@@ -3,7 +3,7 @@ from .constants import *
 from .room import Room
 from .map import Map
 from random import randint
-
+from .Coord import Coord
 class Generator():
     def __init__(self, win: pygame.Surface):
         self.map = Map()
@@ -13,9 +13,8 @@ class Generator():
         self.map.drawMap(self.win)
         pygame.display.update()
     
-    def make_and_add_room(self, coords: tuple[int, int], type:str) -> Room:
-        c, r = coords[0], coords[1]
-        room = Room(c, r, type)
+    def make_and_add_room(self, coord: Coord, type:str) -> Room:
+        room = Room(coord, type)
         self.map.add_room(room)
         self.update()
 
@@ -25,7 +24,7 @@ class Generator():
         # look thru what type of rooms need to be added
         key = 0
         for i, type in enumerate(available):
-            amount = self.map.rooms_by_type[type] - len(self.map.get_room_by_type(type))
+            amount = self.map.get_all_rooms_by_type[type] - len(self.map.get_room_by_type(type))
             for room in range(amount):
                 room_lut.update({key:type})
                 key += 1
@@ -51,7 +50,7 @@ class Generator():
 
         # start on origin, or close enough to it idk floor divide
             if tile == 0:
-                self.make_and_add_room((COL//2, ROW//2), STARTING)
+                self.make_and_add_room(Coord(COL//2, ROW//2), STARTING)
         # draw on random available side
             else:
                 # check what special rooms have yet to be added
