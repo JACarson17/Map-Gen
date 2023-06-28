@@ -2,7 +2,7 @@ import pygame
 from .constants import *
 from .room import Room
 from .map import Map
-from random import randint
+from random import randint, random
 from .Coord import Coord
 class Generator():
     def __init__(self, win: pygame.Surface):
@@ -41,30 +41,44 @@ class Generator():
     def reset(self):
         self.map.clear()
 
+    def random_select(self, type: str, coords: set[Coord]) -> Coord:
+        if len(coords) == 1:
+            return coords.pop()
+        
+        selectable: dict[int, set[Coord]] = {}
+        for size in ROOM_WEIGHTS:
+            selectable.update({size:set()})
+
+        for coord in coords:
+            adjs = len(self.map.get_adjacent_rooms(coord))
+            selectable[adjs].add(coord)
+        
+        r = random()
+        for key in ROOM_WEIGHTS:
+            if ROOM_WEIGHTS[key][0] <= r < ROOM_WEIGHTS[key][1]:
+                coord = list(selectable[key])[randint(0, len(selectable[key])-1)] if selectable[key] != set() else list(coords)[randint(0, len(coords)-1)]
+                return coord
+        pass
+
+
     def coord_filter(self, type: str, coords: set[Coord]):
         # if its a special room, it can only be adjacent to 1 room, else it cannot be adjacent to a special room unless secret(?)
-        if type not in SPECIAL: return coords
+        
         
         special = True if type in SPECIAL else False
         secret = True if type == SECRET else False
         
         used = self.map.used_coords()
-        useable_coords: set[Coord] = set()
-        
+        useable_coords: set[Coord] = coords if not special else set()
+
         if special:
             for coord in coords:
-                adjacencies = coord.get_adjacent()
-                neighbors = 0
-                for adj in adjacencies:
-                    for u in used:
-                        if adj.is_equal(u.value):
-                            neighbors += 1
-                    if neighbors > 1:
-                        break
-                if neighbors <= 1:
+                neighbors = self.map.get_adjacent_rooms(coord)
+                if len(neighbors) <= 1:
                     useable_coords.add(coord)
-
-        return(useable_coords)
+        
+        return self.random_select(type, useable_coords)
+        
 
     def generate(self):
         self.reset()
@@ -84,12 +98,11 @@ class Generator():
                 type = COMMON
                 # get map location 
                 potential_coords = self.map.get_new_adjacent()
-                valid_coords = list(self.coord_filter(type, potential_coords))
-                coord = valid_coords[randint(0, len((valid_coords))-1)]
+                coord = self.coord_filter(type, potential_coords)
+                
                 self.make_and_add_room(coord, type)
         
         for tile, type in enumerate(SPECIAL + SEMI_SPECIAL):
             potential_coords = self.map.get_new_adjacent()
-            valid_coords = list(self.coord_filter(type, potential_coords))
-            coord = valid_coords[randint(0, len((valid_coords))-1)]
+            coord = self.coord_filter(type, potential_coords)
             self.make_and_add_room(coord, type)

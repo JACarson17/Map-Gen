@@ -12,9 +12,14 @@ TOTAL_ROOMS = 50
 SECRET_ROOMS = 2
 SPECIAL_ROOMS = TREASURE_ROOMS + BOSS_ROOMS 
 
-P_ONE = 0
-P_TWO = 0
-P_THREE = 0
+P_ONE = (0, 0.9)
+P_TWO = (0.9, 0.95)
+P_THREE = (0.95, 1)
+P_FOUR  = (1.1, 1.2)
+ROOM_WEIGHTS: dict[int, int] = {1: P_ONE,
+                                2: P_TWO,
+                                3: P_THREE,
+                                4: P_FOUR}
 
 RED = (255, 0, 0)   # Boss room
 WHITE = (255, 255, 255) # regular room

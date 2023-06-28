@@ -45,6 +45,16 @@ class Map():
         else:
             raise Exception(f'There is already a room at {room.coord}')
 
+    def get_adjacent_rooms(self, coord: Coord):
+        neighbors:list[Room] = []
+        
+        adjacencies = coord.get_adjacent()
+        for adj in adjacencies:
+            for u in self.used_coords():
+                if adj.is_equal(u.value):
+                    neighbors.append(self.get_room(adj))
+        return(neighbors)
+    
     def get_rooms(self) -> list[Room]:
         """Returns a list of all Room objects contained in the map
 
