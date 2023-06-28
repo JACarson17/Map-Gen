@@ -117,64 +117,25 @@ class Map():
                 coord = Coord(col, row)
                 self.rooms[coord.value] = None
 
-    def get_new_adjacent(self, type:str) -> set[Coord]:
-        """_summary_
+    def used_coords(self):
+        used: set[Coord] = set()
+        for room in self.rooms.values():
+            if room: used.add(room.coord)
+        return used
 
-        Args:
-            type (str): _description_
+    def get_new_adjacent(self) -> set[Coord]:
+        """returns a set of all coords adjacent to used coords
 
         Returns:
-            set[tuple[int, int]]: _description_
+            set[Coord]: coords adjacent to used coords
         """
-        special = True if type in SPECIAL else False
-        secret = True if type == SECRET else False
-
-        rooms = self.get_all_rooms_by_type()
-        
-        used_coords: set[Coord] = set()
-        for room_list in rooms.values():
-            for room in room_list:
-                used_coords.add(room.coord)
-        
-        special_rooms:list[Room] = []
-        for s_tag in SPECIAL:
-            s_rooms = rooms[s_tag]
-            special_rooms.extend(s_rooms)
-        
-        special_coords: set[Coord] = set()    # coords of special rooms, i.e. coords that can only have 1 adjacent each and already do
-        for special_room in special_rooms:
-            coords = special_room.coord
-            special_coords.add(coords)
 
         potential_coords: set[Coord] = set()
-        for used_coord in used_coords:
-            if secret and used_coord not in [r.coord for r in rooms[COMMON]]:
-                continue
+        for used_coord in self.used_coords():
+            # if special and used_coord not in [r.coord for r in rooms[COMMON]]:
+            #     continue
             for adj in used_coord.get_adjacent():
-                if not adj.value in [used.value for used in used_coords]:
+                if not adj.value in [used.value for used in self.used_coords()] and self.inbounds(adj):
                     potential_coords.add(adj)
         
-        if special: # remove rooms with more than 1 adjacency for special rooms
-            to_remove = []
-            for p_coord in potential_coords:
-                adjacencies = 0
-                for adj_coord in p_coord.get_adjacent():
-                    if adj_coord in potential_coords:
-                        adjacencies += 1
-                    if adjacencies > 1: break
-                if adjacencies > 1: to_remove.append(p_coord)
-
-            for r_coord in to_remove:
-                potential_coords.discard(r_coord)
-
-        
-        useable_coords: set[Coord] = set()
-        
-        for potential_coord in potential_coords:
-            special_adjacent = False
-            if potential_coord not in used_coords and self.inbounds(potential_coord):   # unused and inbounds
-                for special_coord in special_coords:
-                    if potential_coord.is_adjacent(special_coord) and not secret: special_adjacent = True
-                if not special_adjacent: useable_coords.add(potential_coord)
-
-        return(useable_coords)
+        return potential_coords

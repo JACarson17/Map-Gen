@@ -41,6 +41,31 @@ class Generator():
     def reset(self):
         self.map.clear()
 
+    def coord_filter(self, type: str, coords: set[Coord]):
+        # if its a special room, it can only be adjacent to 1 room, else it cannot be adjacent to a special room unless secret(?)
+        if type not in SPECIAL: return coords
+        
+        special = True if type in SPECIAL else False
+        secret = True if type == SECRET else False
+        
+        used = self.map.used_coords()
+        useable_coords: set[Coord] = set()
+        
+        if special:
+            for coord in coords:
+                adjacencies = coord.get_adjacent()
+                neighbors = 0
+                for adj in adjacencies:
+                    for u in used:
+                        if adj.is_equal(u.value):
+                            neighbors += 1
+                    if neighbors > 1:
+                        break
+                if neighbors <= 1:
+                    useable_coords.add(coord)
+
+        return(useable_coords)
+
     def generate(self):
         self.reset()
         # how to generate a map
@@ -58,12 +83,13 @@ class Generator():
                 # type = self.determine_room_type(valid)
                 type = COMMON
                 # get map location 
-                valid_coords = list(self.map.get_new_adjacent(type))
+                potential_coords = self.map.get_new_adjacent()
+                valid_coords = list(self.coord_filter(type, potential_coords))
                 coord = valid_coords[randint(0, len((valid_coords))-1)]
                 self.make_and_add_room(coord, type)
         
         for tile, type in enumerate(SPECIAL + SEMI_SPECIAL):
-            for i in range(rooms_by_type[type]):
-                valid_coords = list(self.map.get_new_adjacent(type))
-                coord = valid_coords[randint(0, len((valid_coords))-1)]
-                self.make_and_add_room(coord, type)
+            potential_coords = self.map.get_new_adjacent()
+            valid_coords = list(self.coord_filter(type, potential_coords))
+            coord = valid_coords[randint(0, len((valid_coords))-1)]
+            self.make_and_add_room(coord, type)

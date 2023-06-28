@@ -22,9 +22,6 @@ class Room():
 
     def change_coords(self, new_coord):
         self.coord = new_coord
-
-    def get_row(self):
-        return self.row
     
     def get_coord(self) -> Coord:
         return(self.coord)
