@@ -58,7 +58,7 @@ class Generator():
             if ROOM_WEIGHTS[key][0] <= r < ROOM_WEIGHTS[key][1]:
                 coord = list(selectable[key])[randint(0, len(selectable[key])-1)] if selectable[key] != set() else list(coords)[randint(0, len(coords)-1)]
                 return coord
-        pass
+        raise Exception(f"There is no random weight at this value: {r}")
 
 
     def coord_filter(self, type: str, coords: set[Coord]):
