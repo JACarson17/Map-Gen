@@ -53,11 +53,13 @@ class Generator():
             adjs = len(self.map.get_adjacent_rooms(coord))
             selectable[adjs].add(coord)
         
-        r = random()
-        for key in ROOM_WEIGHTS:
-            if ROOM_WEIGHTS[key][0] <= r < ROOM_WEIGHTS[key][1]:
-                coord = list(selectable[key])[randint(0, len(selectable[key])-1)] if selectable[key] != set() else list(coords)[randint(0, len(coords)-1)]
-                return coord
+        coord = None
+        while coord == None:
+            r = random()
+            for key in ROOM_WEIGHTS:
+                if ROOM_WEIGHTS[key][0] <= r < ROOM_WEIGHTS[key][1]:
+                    coord = list(selectable[key])[randint(0, len(selectable[key])-1)] if selectable[key] != set() else None
+        return coord
         raise Exception(f"There is no random weight at this value: {r}")
 
 

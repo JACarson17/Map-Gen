@@ -8,14 +8,14 @@ FPS = 60
 TREASURE_ROOMS = 2
 BOSS_ROOMS = 2
 SHOP_ROOMS = 1
-TOTAL_ROOMS = 50
+TOTAL_ROOMS = 77
 SECRET_ROOMS = 2
 SPECIAL_ROOMS = TREASURE_ROOMS + BOSS_ROOMS 
 
-P_ONE = (0, 0.9)
-P_TWO = (0.9, 0.95)
-P_THREE = (0.95, 1)
-P_FOUR  = (1.1, 1.2)
+P_ONE = (0, .7)
+P_TWO = (0.7, 0.9)
+P_THREE = (0.9, 1)
+P_FOUR  = (2, 2)
 ROOM_WEIGHTS: dict[int, int] = {1: P_ONE,
                                 2: P_TWO,
                                 3: P_THREE,
